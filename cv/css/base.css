@@ -166,7 +166,7 @@ input,
 button {
   font-family: var(--default-font);
   font-size: 16px;
-  font-size: clamp(14px, calc(0.7rem + 0.28vw), 18px);
+  font-size: clamp(16px, calc(0.7rem + 0.32vw), 20px);
   line-height: 1.5;
 }
 body {
@@ -563,6 +563,17 @@ label {
   z-index: -1;
   box-shadow: 0.05em 0.05em 0.2em var(--col-light-dark);
 }
+.cv-experience h4 {
+  font-size: 120%;
+  margin-bottom: 1em;
+  border-bottom: 1px solid var(--col-light);
+}
+.cv-details h5 {
+  font-size: 110%;
+  font-weight: 500;
+  margin-top: 1em;
+  padding: 0 0 0.5em 0;
+}
 .cv-details p {
   margin-bottom: 1em;
   position: relative;
@@ -608,11 +619,7 @@ label {
   padding-bottom: 1em;
 }
 .cv-experience ul {
-  padding-left: 1em;
-}
-.cv-experience h4 {
-  margin-bottom: 1em;
-  border-bottom: 1px solid var(--col-light);
+  padding-left: 1.5em;
 }
 .cv-experience svg {
   height: 2em;
@@ -633,7 +640,7 @@ label {
 }
 .cv-experience svg circle.value {
   stroke: var(--col-complementary-lighter);
-  stroke-width: 6;
+  stroke-width: 4;
   transition: stroke-width 0.5s ease;
 }
 .cv-experience svg circle.basebg {
@@ -1117,7 +1124,7 @@ button.large svg:last-child,
   .cv-details .cv-skills {
     page-break-inside: avoid;
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(3, 1fr);
     column-gap: 2em;
 /*padding-bottom: 1em;
 			padding-left: 0.5em;*/

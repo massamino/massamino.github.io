@@ -2,7 +2,7 @@ window.addEventListener('load', function() {
 	let svgs = document.querySelectorAll('.svg-chart');
 	let ns = "http://www.w3.org/2000/svg";
 	let radius = 11;
-	let svgsize = 30;
+	let svgsize = 32;
 
 	for(let i = 0; i < svgs.length; i++) {
 		let svg = svgs[i];
