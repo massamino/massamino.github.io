@@ -4,8 +4,241 @@
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width,minimum-scale=1.0">
 		<title>Home</title>
+		<style>
+			:root {
+				--primary-color: #1f374b;
+				--secondary-color: #00d4ff;
+				--background-gradient: linear-gradient(135deg, #15274e 0%, #1c0b30 100%);
+				--text-color: #507592;
+				--text-color-3d: #132635;
+				--text-color-3d2: #034774;
+				--font-family: 'Arial', sans-serif;
+				--header-height: 400px;
+				--canvas-clear-color: rgba(0, 0, 0, 0);
+				--ambient-light-color: rgba(255, 255, 255, 1);
+				--directional-light-color: rgba(245, 152, 47, 1);
+				--point-light1-color: rgba(3, 12, 37, 1);
+				--point-light2-color: rgba(5, 22, 68, 1);
+				--mouser-light-color: rgb(204, 0, 255);
+			}
+			* {
+				margin: 0;
+				padding: 0;
+				box-sizing: border-box;
+			}
+
+			html, body {
+				height: 100%;
+				margin: 0;
+				padding: 0;
+			}
+
+			body {
+				font-family: 'Roboto', 'Arial', sans-serif;
+				background: var(--background-gradient);
+				color: var(--text-color);
+			}
+
+			#canvas {
+				display: block;
+			}
+
+			.container {
+				background-color: rgba(0,0,0,0.2);
+				border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+			}
+
+			.header-content {
+				height: var(--header-height);
+				display: grid;
+				grid-template-rows: 1fr auto auto;
+			}
+
+			.header-content canvas {
+				grid-row: 1;
+				grid-column: 1;
+			}
+
+			.header-content h1 {
+				text-align: center;
+				margin-top: 100px;
+				font-size: 60px;
+				grid-row: 1;
+				grid-column: 1;
+				text-shadow: 3px 3px 10px rgba(0, 0, 0, 0.5);
+			}
+
+			.header-content p {
+				text-align: center;
+				margin-top: 240px;
+				font-size: 30px;
+				opacity: 0.9;
+				grid-row: 1;
+				grid-column: 1;
+				text-shadow: 3px 3px 10px rgba(0, 0, 0, 0.5);
+			}
+			#main-nav {
+				display: flex;
+				background-color: rgba(0,0,0,0.5);
+				backdrop-filter: blur(10px);
+				border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+			}
+
+			#main-nav a {
+				color: var(--text-color);
+				text-decoration: none;
+				font-size: 18px;
+				padding: 10px 20px;
+				border-right: 1px solid rgba(255, 255, 255, 0.1);
+				transition: background-color 0.3s, color 0.3s;
+			}
+
+			#main-nav a:hover {
+				background-color: rgba(255, 255, 255, 0.1);
+				color: var(--secondary-color);
+			}
+		</style>
 	</head>
 	<body>
-		
+		<div class="container header-content">
+			<canvas id="canvas"></canvas>
+			<h1></h1>
+			<p>Vervecken</p>
+		</div>
+		<nav id="main-nav">
+			<a href="cv">CV</a>
+		</nav>
+
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+		<script>
+			function getCSSVariableAsHex(varName) {
+				const value = getComputedStyle(document.documentElement).getPropertyValue(varName).trim();
+				
+				if (value.startsWith('#')) {
+					return parseInt(value.substring(1), 16);
+				}
+				
+				const rgbMatch = value.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)/);
+				if (rgbMatch) {
+					const r = parseInt(rgbMatch[1]);
+					const g = parseInt(rgbMatch[2]);
+					const b = parseInt(rgbMatch[3]);
+					return (r << 16) | (g << 8) | b;
+				}
+				
+				return 0xffffff;
+			}
+
+			const canvas = document.getElementById('canvas');
+			const scene = new THREE.Scene();
+			const camera = new THREE.PerspectiveCamera(75, window.innerWidth / 400, 0.1, 1000);
+			const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
+			
+			renderer.setSize(window.innerWidth, 400);
+			renderer.setClearColor(0x000000, 0);
+			camera.position.z = 200;
+
+			const ambientLight = new THREE.AmbientLight(getCSSVariableAsHex('--ambient-light-color'), 0.5);
+			scene.add(ambientLight);
+
+			const directionalLight = new THREE.DirectionalLight(getCSSVariableAsHex('--directional-light-color'), 0.8);
+			directionalLight.position.set(100, 100, 100);
+			scene.add(directionalLight);
+
+			const pointLight = new THREE.PointLight(getCSSVariableAsHex('--point-light1-color'), 0.8);
+			pointLight.position.set(-100, -100, 300);
+			scene.add(pointLight);
+
+			const pointLight2 = new THREE.PointLight(getCSSVariableAsHex('--point-light2-color'), 0.6);
+			pointLight2.position.set(100, -100, 100);
+			scene.add(pointLight2);
+
+			const mouseLightColor = new THREE.PointLight(getCSSVariableAsHex('--mouse-light-color'), 1);
+			mouseLightColor.position.set(0, 0, 100);
+			scene.add(mouseLightColor);
+
+			let mouseX = 0;
+			let mouseY = 0;
+			document.addEventListener('mousemove', (event) => {
+				mouseX = (event.clientX / window.innerWidth) * 2 - 1;
+				mouseY = -(event.clientY / 400) * 2 + 1;
+				
+				mouseLightColor.position.x = mouseX * 200;
+				mouseLightColor.position.y = mouseY * 200;
+				mouseLightColor.position.z = 100;
+			});
+
+			const fontLoader = new THREE.FontLoader();
+			fontLoader.load('https://threejs.org/examples/fonts/helvetiker_bold.typeface.json', (font) => {
+				const geometry = new THREE.TextGeometry('Massimo', {
+					font: font,
+					size: 60,
+					height: 2,
+					curveSegments: 12,
+					bevelEnabled: true,
+					bevelThickness: 2,
+					bevelSize: 2,
+					bevelSegments: 5
+				});
+
+				geometry.center();
+
+				const material1 = new THREE.MeshPhongMaterial({
+					color: getCSSVariableAsHex('--text-color-3d2'),
+					shininess: 100,
+					emissive: getCSSVariableAsHex('--text-color-3d2')
+				});
+
+				const material2 = new THREE.MeshPhongMaterial({
+					color: 0x00d4ff,
+					shininess: 80,
+					emissive: 0x004466
+				});
+
+				const material3 = new THREE.MeshStandardMaterial({
+					color: getCSSVariableAsHex('--text-color-3d'),
+					metalness: 0.8,
+					roughness: 0.4,
+					emissive: getCSSVariableAsHex('--text-color-3d')
+				});
+
+				const textGroup = new THREE.Group();
+
+				const mesh3 = new THREE.Mesh(geometry, material3);
+				mesh3.position.z = -8;
+				//mesh3.position.x = -2;
+				textGroup.add(mesh3);
+
+				const mesh2 = new THREE.Mesh(geometry, material2);
+				mesh2.position.z = -4;
+				//textGroup.add(mesh2);
+
+				const mesh1 = new THREE.Mesh(geometry, material1);
+				mesh1.position.z = -14;
+				textGroup.add(mesh1);
+
+				scene.add(textGroup);
+
+				function animate() {
+					requestAnimationFrame(animate);
+
+					// Wiggle movement
+					const time = Date.now() * 0.001;
+					textGroup.rotation.x = Math.sin(time * 0.5) * 0.25;
+					textGroup.rotation.y = Math.cos(time * 0.3) * 0.10;
+					textGroup.rotation.z = Math.sin(time * 0.4) * 0.10;
+
+					renderer.render(scene, camera);
+				}
+
+				animate();
+			});
+
+			window.addEventListener('resize', () => {
+				camera.aspect = window.innerWidth / 400;
+				camera.updateProjectionMatrix();
+				renderer.setSize(window.innerWidth, 400);
+			});
+		</script>
 	</body>
 </html>
